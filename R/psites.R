@@ -58,8 +58,7 @@ psite <- function(data, flanking = 6, start = TRUE, extremity="auto", plot = FAL
                   plotdir = NULL, plotformat="png", cl = 99) {
   names <- names(data)
   offset <- NULL
-  for (n in names) { 
-    n = "Samp1"
+  for (n in names) {
     cat(sprintf("processing %s\n", n))
     df <- data[[n]]
     lev <- sort(unique(df$length))
