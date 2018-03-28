@@ -296,3 +296,23 @@ psite_info_onesample = function (data, offset, samplename = 'sample1', fastapath
 	return(data)
 }
 
+# Fix for rlength_distr() to work with trimmed reads that show a non-Gaussian read distribution
+rlength_distr <- function (data, sample, cl = 100) 
+{
+    df <- data[[sample]]
+    dist <- table(factor(df$length, levels = c(min(df$length):max(df$length))))
+    dist <- data.frame(length = names(dist), count = as.vector((dist/sum(dist)) * 
+        100))
+    xmin <- quantile(df$length, (1 - cl/100)/2)
+    xmax <- quantile(df$length, 1 - (1 - cl/100)/2)
+    p <- ggplot(dist, aes(as.numeric(as.character(length)), count)) + 
+        geom_bar(stat = "identity", fill = "gray80") + labs(title = sample, 
+        x = "Read length", y = "Count (%)") + theme_bw(base_size = 18) + 
+        theme(plot.title = element_text(hjust = 0.5)) + scale_x_continuous(limits = c(xmin - 
+        0.5, xmax + 0.5), breaks = seq(xmin + ((xmin)%%2), xmax, 
+        by = max(c(1,floor((xmax - xmin)/7)))))
+    output <- list()
+    output[["plot"]] <- p
+    output[["df"]] <- dist
+    return(output)
+}
